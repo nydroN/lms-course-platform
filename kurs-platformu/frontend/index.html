@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Kurs Platformu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">🎓 LMS Platformu</a>
+            <div class="d-flex align-items-center" id="authSection">
+                <button class="btn btn-outline-light me-2 btn-sm" id="loginBtn" data-bs-toggle="modal" data-bs-target="#loginModal">Giriş Yap</button>
+                <button class="btn btn-primary btn-sm" id="registerBtn" data-bs-toggle="modal" data-bs-target="#registerModal">Kayıt Ol</button>
+                
+                <span id="welcomeMsg" class="text-light me-3 small" style="display: none;"></span>
+                <button class="btn btn-danger btn-sm" id="logoutBtn" style="display: none;">Çıkış Yap</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Mevcut Kurslar</h2>
+            <button class="btn btn-success shadow-sm" id="addNewCourseBtn" data-bs-toggle="modal" data-bs-target="#addCourseModal" style="display: none;">
+                + Yeni Kurs Ekle
+            </button>
+        </div>
+        
+        <div class="row" id="course-list">
+            </div>
+    </div>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Sisteme Giriş Yap</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">E-posta Adresi</label>
+                            <input type="email" class="form-control" id="loginEmail" required placeholder="ornek@mail.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Şifre</label>
+                            <input type="password" class="form-control" id="loginPassword" required placeholder="******">
+                        </div>
+                        <div id="loginError" class="alert alert-danger mb-3" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold">Yeni Hesap Oluştur</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ad</label>
+                                <input type="text" class="form-control" id="regFirstName" required placeholder="Örn: Muhammed">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Soyad</label>
+                                <input type="text" class="form-control" id="regLastName" required placeholder="Örn: Sümbül">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">E-posta Adresi</label>
+                            <input type="email" class="form-control" id="regEmail" required placeholder="ornek@mail.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Şifre</label>
+                            <input type="password" class="form-control" id="regPassword" required placeholder="En az 6 karakter">
+                        </div>
+                        <div id="registerError" class="alert alert-danger mb-3" style="display: none;"></div>
+                        <button type="submit" class="btn btn-success w-100">Kayıt Ol</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addCourseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Yeni Kurs Detayları</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCourseForm">
+                        <div class="mb-3">
+                            <label class="form-label">Kurs Başlığı</label>
+                            <input type="text" class="form-control" id="courseTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alt Başlık</label>
+                            <input type="text" class="form-control" id="courseSubTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="courseDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Fiyat</label>
+                                <input type="number" class="form-control" id="coursePrice" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dil ID (1: TR)</label>
+                                <input type="number" class="form-control" id="courseLanguageId" value="1" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Kategori ID</label>
+                                <input type="number" class="form-control" id="courseCategoryId" value="1" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Kursu Yayınla</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="detailTitle">Kurs Başlığı</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="fw-bold text-primary">Kurs Hakkında</h6>
+                            <p id="detailDescription" class="text-muted"></p>
+                        </div>
+                        <div class="col-md-4 border-start">
+                            <div class="mb-3">
+                                <label class="small text-muted d-block">Fiyat</label>
+                                <span id="detailPrice" class="h4 fw-bold text-success"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small text-muted d-block">Yayınlanma Tarihi</label>
+                                <span id="detailDate" class="badge bg-info"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small text-muted d-block">Kategori</label>
+                                <span id="detailCategory" class="badge bg-secondary"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = "http://127.0.0.1:8080/api";
+        
+        // --- 1. YENİ EKLENEN AJAN FONKSİYON ---
+        // Biletin içindeki rolü okur
+        function getUserRole() {
+            const token = localStorage.getItem('token');
+            if (!token) return null;
+
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payload = JSON.parse(atob(payloadBase64));
+                return payload.role; // Backend'den gelen 'ADMIN' veya 'USER'
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Merkezi İstek Fonksiyonu (Özel Kurye)
+        async function apiRequest(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`; 
+            }
+
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
+
+            return await fetch(`${API_BASE}${endpoint}`, options);
+        }
+
+        // 1. Kursları Listeleme
+        async function fetchCourses() {
+            try {
+                const response = await apiRequest('/courses'); 
+                const courses = await response.json();
+                const courseList = document.getElementById('course-list');
+                courseList.innerHTML = '';
+
+                if (!Array.isArray(courses) || courses.length === 0) {
+                    courseList.innerHTML = '<div class="alert alert-info w-100">Henüz kurs bulunmuyor.</div>';
+                    return;
+                }
+
+                courses.forEach(course => {
+                    // --- 2. YENİ EKLENEN MANTIK: Sadece Admin'e Sil Butonu Göster ---
+                    let actionButtons = '';
+                    if (getUserRole() === 'ADMIN') {
+                        actionButtons = `
+                            <button class="btn btn-outline-primary btn-sm w-50 me-1" onclick="showCourseDetails(${course.id})">İncele</button>
+                            <button class="btn btn-outline-danger btn-sm w-50 ms-1" onclick="deleteCourse(${course.id})">Sil</button>
+                        `;
+                    } else {
+                        actionButtons = `
+                            <button class="btn btn-outline-primary btn-sm w-100" onclick="showCourseDetails(${course.id})">İncele</button>
+                        `;
+                    }
+
+                    courseList.innerHTML += `
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body">
+                                    <span class="badge bg-secondary mb-2">${course.categoryName || 'Genel'}</span>
+                                    <h5 class="card-title fw-bold">${course.title}</h5>
+                                    <p class="card-text text-muted small">${course.subTitle}</p>
+                                </div>
+                                <div class="card-footer bg-white border-top-0 d-flex justify-content-between">
+                                    ${actionButtons}
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } catch (error) {
+                console.error("Hata:", error);
+                document.getElementById('course-list').innerHTML = '<div class="alert alert-danger w-100">Backend sunucusuna bağlanılamadı!</div>';
+            }
+        }
+
+        // 2. Kurs Detaylarını Gösterme
+        async function showCourseDetails(courseId) {
+            try {
+                const response = await apiRequest(`/courses/${courseId}`); 
+                if (response.ok) {
+                    const course = await response.json();
+                    
+                    document.getElementById('detailTitle').innerText = course.title;
+                    document.getElementById('detailDescription').innerText = course.description || "Açıklama bulunmuyor.";
+                    document.getElementById('detailPrice').innerText = (course.price || 0) + " TL";
+                    document.getElementById('detailDate').innerText = course.publishedAt || "Tarih bilgisi yok";
+                    document.getElementById('detailCategory').innerText = course.categoryName || "Genel";
+
+                    const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+                    detailModal.show();
+                } else {
+                    alert("Kurs detayları yüklenemedi!");
+                }
+            } catch (error) {
+                console.error("Detay Hatası:", error);
+                alert("Sunucu bağlantı hatası!");
+            }
+        }
+
+        // 3. Kurs Silme
+        async function deleteCourse(courseId) {
+            if (!confirm("Bu kursu kalıcı olarak silmek istediğine emin misin kanka?")) return;
+
+            if (!localStorage.getItem('token')) {
+                alert("Silme işlemi için giriş yapmalısınız!");
+                return;
+            }
+
+            try {
+                const response = await apiRequest(`/courses/${courseId}`, 'DELETE'); 
+
+                if (response.ok) {
+                    alert("Kurs başarıyla silindi! 🗑️");
+                    fetchCourses(); 
+                } else {
+                    alert("Silme işlemi başarısız oldu. Yetkiniz olmayabilir.");
+                }
+            } catch (error) {
+                console.error("Silme Hatası:", error);
+                alert("Sunucu bağlantı hatası!");
+            }
+        }
+
+        // 4. Giriş Yapma Mantığı
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const loginData = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await apiRequest('/users/login', 'POST', loginData); 
+
+                if (response.ok) {
+                    const textData = await response.text();
+                    let token;
+                    try {
+                        const jsonData = JSON.parse(textData);
+                        token = jsonData.token || jsonData;
+                    } catch (e) {
+                        token = textData;
+                    }
+
+                    if (token) {
+                        localStorage.setItem('token', token);
+                        alert('Başarıyla giriş yapıldı! 🎉');
+                        updateNavbar();
+                        bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                        fetchCourses();
+                    }
+                } else {
+                    alert('Giriş başarısız! Bilgileri kontrol et kanka.');
+                }
+            } catch (error) {
+                console.error('Kritik Hata:', error);
+                alert('Cevap okunamadı veya sunucu hatası!');
+            }
+        });
+
+        // 5. Kayıt Olma Mantığı
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('registerError');
+            errorDiv.style.display = 'none';
+
+            const registerData = {
+                firstName: document.getElementById('regFirstName').value,
+                lastName: document.getElementById('regLastName').value,
+                email: document.getElementById('regEmail').value,
+                passwordHash: document.getElementById('regPassword').value 
+            };
+
+            try {
+                const response = await apiRequest('/users/register', 'POST', registerData); 
+
+                if (response.ok) {
+                    alert('Harika! Kayıt başarıyla oluşturuldu. 🎉 Şimdi giriş yapabilirsiniz.');
+                    bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+                    document.getElementById('registerForm').reset();
+                    new bootstrap.Modal(document.getElementById('loginModal')).show();
+                } else {
+                    const errorMsg = await response.text();
+                    errorDiv.innerText = errorMsg || "Kayıt işlemi başarısız oldu!";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Kayıt Hatası:', error);
+                errorDiv.innerText = "Sunucuya bağlanılamadı!";
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // 6. Kurs Ekleme Mantığı
+        document.getElementById('addCourseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!localStorage.getItem('token')) {
+                alert("Önce giriş yapmalısınız!");
+                return;
+            }
+
+            const courseData = {
+                title: document.getElementById('courseTitle').value,
+                subTitle: document.getElementById('courseSubTitle').value,
+                description: document.getElementById('courseDescription').value,
+                price: parseFloat(document.getElementById('coursePrice').value),
+                languageId: parseInt(document.getElementById('courseLanguageId').value),
+                publishedAt: new Date().toISOString().split('T')[0],
+                updatedAt: new Date().toISOString().split('T')[0],
+                category: { id: parseInt(document.getElementById('courseCategoryId').value) }
+            };
+
+            try {
+                const response = await apiRequest('/courses/add', 'POST', courseData); 
+
+                if (response.ok) {
+                    alert('Kurs eklendi! 🎉');
+                    bootstrap.Modal.getInstance(document.getElementById('addCourseModal')).hide();
+                    document.getElementById('addCourseForm').reset();
+                    fetchCourses();
+                } else {
+                    alert('Hata: Yetkiniz olmayabilir veya veritabanı kısıtlaması oluştu.');
+                }
+            } catch (error) {
+                alert('İstek gönderilemedi!');
+            }
+        });
+
+        // Navbar Güncelleme & Çıkış Yap
+        function updateNavbar() {
+            const token = localStorage.getItem('token');
+            const isLogged = !!token;
+            const userRole = getUserRole(); // YENİ EKLENDİ
+            
+            document.getElementById('loginBtn').style.display = isLogged ? 'none' : 'inline-block';
+            document.getElementById('registerBtn').style.display = isLogged ? 'none' : 'inline-block';
+            document.getElementById('logoutBtn').style.display = isLogged ? 'inline-block' : 'none';
+            document.getElementById('welcomeMsg').style.display = isLogged ? 'inline-block' : 'none';
+            document.getElementById('welcomeMsg').innerText = isLogged ? "Hoş geldin Mami! 👋" : "";
+
+            // --- 3. YENİ EKLENEN MANTIK: "Yeni Kurs Ekle" Butonunu Sadece Admin Görür ---
+            const addCourseBtn = document.getElementById('addNewCourseBtn');
+            if (isLogged && userRole === 'ADMIN') {
+                addCourseBtn.style.display = 'inline-block';
+            } else {
+                addCourseBtn.style.display = 'none';
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            alert('Çıkış yapıldı.');
+            location.reload();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCourses();
+            updateNavbar();
+        });
+    </script>
+</body>
+</html>
